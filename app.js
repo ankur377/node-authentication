@@ -1,15 +1,44 @@
 const express = require("express");
 const app = express();
 let bodyParser = require('body-parser');
-let database  = require('./models/database');
-let jsonParser = bodyParser.json();
+let database = require('./models/database');
 const routesApi = require('./routes/app-routes');
+const { responseMiddleware } = require('./helper/response')
 require('dotenv').config();
 
-app.use('/api', jsonParser, routesApi);
+
+
+enableCORS(app);
+attachBodyParser(app);
+startServer(app, process.env.PORT);
+
+app.use('/api', responseMiddleware, routesApi);
 
 
 
-const listener = app.listen(process.env.PORT || 9000, () => {
-    console.log('Your App is listening on port http://localhost:' + listener.address().port)
-})
+/* Fuctions */
+
+// Start Express Server
+function startServer(expressInstance, port) {
+    expressInstance.listen(port, () => {
+        console.log('App listening on port : ', port);
+    });
+}
+
+// Enable CORS
+function enableCORS(expressInstance) {
+    expressInstance.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, timeZone");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        next();
+    });
+}
+
+// Attach BodyParser
+function attachBodyParser(expressInstance) {
+    expressInstance.use(bodyParser.json({ limit: '1000mb' }));
+    expressInstance.use(bodyParser.urlencoded({
+        extended: true
+    }));
+}
