@@ -47,11 +47,14 @@ module.exports = {
         }
     },
     createComment: async (req, res) => {
-        try {
-            const result = await Post.findByIdAndUpdate(req.params.id, { $push: { comments: req.body } });
-            res.status(200).json("Succesfully Add Comment");
-        } catch (error) {
-            res.status(500).json(error);
+        if(req.userId){
+
+            try {
+                const result = await Post.findByIdAndUpdate(req.params.id, { $push: { comments: req.body } });
+                res.status(200).json("Succesfully Add Comment");
+            } catch (error) {
+                res.status(500).json(error);
+            }
         }
     },
 }
