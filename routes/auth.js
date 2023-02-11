@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const token = require('../middleware/auth');
 const log = require('../helper/logger');
-const { registerUser, loginUser, getUsers, updateUser, deleteUser } = require('../controllers/auth');
+const { registerUser, loginUser, getUsers, getUserDetail, updateUser, deleteUser } = require('../controllers/auth');
 
 router.post('/register', (req, res) => {
     try {
@@ -26,7 +26,7 @@ router.post('/login', (req, res) => {
         })
 });
 
-router.get('/users', token.verifytoken, (req, res) => {
+router.get('/users', (req, res) => {
     getUsers(req, res)
         .then((response) => {
             log.debug("GET: /api/auth/users");
@@ -35,7 +35,18 @@ router.get('/users', token.verifytoken, (req, res) => {
             log.error("GET: /api/auth/users", error);
             res.customRes(error.message);
         })
-})
+});
+
+router.get('/all/users', (req, res) => {
+    getUserDetail(req, res)
+        .then((response) => {
+            log.debug("GET: /api/auth/all/users");
+            res.send(response);
+        }).catch((error) => {
+            log.error("GET: /api/auth/all/users", error);
+            res.customRes(error.message);
+        })
+});
 
 router.put('/users/:id', (req, res) => {
     try {

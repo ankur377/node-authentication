@@ -80,6 +80,16 @@ module.exports = {
         }
     },
 
+    getUserDetail: async function (req, res) {
+        try {
+            let user = await User.find();
+            res.send(user);
+        } catch {
+            res.status(500).send()
+        }
+
+    },
+
     updateUser: async (req, res) => {
         const Users = await User.findOne({ _id: req.params.id });
         if (Users == null || undefined) {
